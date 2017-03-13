@@ -25,8 +25,8 @@ function draw()
 
   var entreeX = 0;
   var entreeY = 0;
-  var sortieX = width - tailleCases;
-  var sortieY = height - tailleCases;
+  var sortieX = 1300 - tailleCases;
+  var sortieY = 900 - tailleCases;
 
   var plaine = 0;
   var montagne = 0;
@@ -36,7 +36,7 @@ function draw()
   var tabCoord =new Array();
 
   for (var i=0; i<1871; i++) {
-    tabCoord[i] = new Array;
+    tabCoord[i] = new Array();
     for (var j=0; j<1871; j++) {
       tabCoord[i][j] = "Vide";
     }
@@ -48,18 +48,18 @@ function draw()
 
   loadPixels();
 
-  for (var y = 0; y < height; y++)
+  for (var y = 0; y < 900; y++)
   {
         var xoff = 0;
 
-    for (var x = 0; x < width; x++)
+    for (var x = 0; x < 1300; x++)
     {
 
-      var index = (x + y * width) * 4;
+      var index = (x + y * 1300) * 4;
       //var r = random(255);
       var r = noise(xoff, yoff) * 255;
 
-      tabR[x+(y*width)] = r;
+      tabR[x+(y*1300)] = r;
       //console.log(tabR[x]);
 
       pixels[index ] = r
@@ -92,19 +92,24 @@ function draw()
 
 
 
+
       xoff += inc;
     }
      yoff += inc;
   }
   updatePixels();
 
+console.log(montagne);
+  if(montagne < 230000)
+  {
+    window.location.reload()
+  }
 
-
-  for(var a = 0; a<height; a+=tailleCases)// faire des bons en hauteur
+  for(var a = 0; a<900; a+=tailleCases)// faire des bons en hauteur
   {
     coordY++;
     coordX = -1;
-    for(var b =0; b< width; b+=tailleCases)//faire des bons en largeur
+    for(var b =0; b< 1300; b+=tailleCases)//faire des bons en largeur
     {
       coordX++;
       var vert=0;
@@ -119,7 +124,7 @@ function draw()
 
           for(var h = 0; h < tailleCases; h++)//on s'occupe pixel par pixel largeur
           {
-            var pix = h+(g*width)+b+(a*width);// h = Pour aller de 0 a 50, ensuite on va au pixels numéro 1300
+            var pix = h+(g*1300)+b+(a*1300);// h = Pour aller de 0 a 50, ensuite on va au pixels numéro 1300
             var y = tabR[pix];
 
             if ( y< 255 &&  y >= 170) //ocean.
@@ -165,6 +170,9 @@ function draw()
      ctx.fillStyle = "#996633";
      ctx.fillRect(b,a,tailleCases,tailleCases);
      ctx.closePath();
+
+     
+
      tabCoord[coordX][coordY] = "montagne";
 
 
@@ -181,6 +189,17 @@ function draw()
 
 
      }
+     if(coordY >= 2)
+     {
+     if(tabCoord[coordX ][coordY - 2] == "montagne" && tabCoord[coordX ][coordY] == "montagne")
+     {
+       ctx.beginPath();
+       ctx.fillStyle = "#996633";
+       ctx.fillRect(b-tailleCases,a,tailleCases,tailleCases);
+       ctx.closePath();
+       tabCoord[coordX][coordY-1]=="montagne";
+     }
+    }
 
 
      }
@@ -202,6 +221,17 @@ function draw()
            ctx.closePath();
            tabCoord[coordX-1][coordY]=="plaine";
          }
+        }
+        if(coordY >= 2)
+        {
+        if(tabCoord[coordX ][coordY - 2] == "plaine" && tabCoord[coordX ][coordY] == "plaine")
+        {
+          ctx.beginPath();
+          ctx.fillStyle = "green";
+          ctx.fillRect(b-tailleCases,a,tailleCases,tailleCases);
+          ctx.closePath();
+          tabCoord[coordX][coordY-1]=="plaine";
+        }
        }
 
      }
@@ -224,6 +254,17 @@ function draw()
        tabCoord[coordX-1][coordY]="ocean";
      }
    }
+   if(coordY >= 2)
+   {
+   if(tabCoord[coordX ][coordY - 2] == "ocean" && tabCoord[coordX ][coordY] == "ocean")
+   {
+     ctx.beginPath();
+     ctx.fillStyle = "blue";
+     ctx.fillRect(b-tailleCases,a,tailleCases,tailleCases);
+     ctx.closePath();
+     tabCoord[coordX][coordY-1]=="ocean";
+   }
+  }
 
      }
      else
@@ -234,32 +275,109 @@ function draw()
      ctx.closePath();
      /*tabCoord[numTest]="montagne";*/
      }
-     console.log(tabCoord[coordX][coordY] + " X : " + coordX + " Y : " + coordY);
+     //console.log(tabCoord[coordX][coordY] + " X : " + coordX + " Y : " + coordY);
+
     }
   }
 
 
-
   //création entrée sortie ennemis.
+  coordX = 0;
+  coordY = 0;
   while(tabCoord[tabEntreX][tabEntreY] == "montagne" || tabCoord[tabEntreX][tabEntreY] == "ocean")
   {
+    coordX++;
     tabEntreX++;
   }
+  var ReCoordXPF = coordX;
+  var ReCoordYPF = coordY;
+  tabCoord[tabEntreX][tabEntreY] = "Entrée";
+//  console.log(tabCoord[tabEntreX][tabEntreY] + " X : " + coordX + " Y " +coordY);
   ctx.beginPath();
   ctx.fillStyle = "yellow";
   ctx.fillRect(tabEntreX*tailleCases,entreeY,tailleCases,tailleCases);
   ctx.closePath();
 
+
+  coordX = 51;
+  coordY = 35;
   while(tabCoord[tabSortieX][tabSortieY] == "montagne" || tabCoord[tabSortieX][tabSortieY]== "ocean")
   {
+    coordX--;
     sortieX -= tailleCases;
     tabSortieX--;
   }
+  var coordXPF = coordX - 1;
+  var coordYPF = coordY - 1;
+  tabCoord[tabEntreX][tabEntreY] = "Sortie";
+  //console.log(tabCoord[tabEntreX][tabEntreY] + " X : " + coordX + " Y " +coordY);
   ctx.beginPath();
   ctx.fillStyle = "yellow";
   ctx.fillRect(sortieX,sortieY,tailleCases,tailleCases);
   ctx.closePath();
 
+ var grille = new PF.Grid(51,35);
+
+ for (var i=0; i<51; i++) {
+   grille[i] = new Array(35);
+ }
+
+
+ for(var i = 0; i<35;i++){
+   for(var j = 0; j<51;j++){
+          grille[j][i] = tabCoord[j][i];
+          }
+      }
+
+    for(var i =0; i<35; i++){
+      for(var j = 0; j<51; j++){
+            if(tabCoord[j][i] === "montagne" || tabCoord[j][i] ==="ocean"){
+            grille.setWalkableAt(j , i , false);
+            }
+            else if(tabCoord[j][i] === "plaine" ){
+            grille.setWalkableAt(j , i , true);
+            }
+      }
+    }
+
+var finder = new PF.AStarFinder();
+var positionX = 0;
+var positionY = 0;
+var path = finder.findPath(ReCoordXPF,ReCoordYPF,coordXPF,coordYPF,grille);
+
+/*
+for(var i = 0; i<path.length;i++){
+  for(var j = 0; j<2;j++){
+console.log( path[i][j]);
+}
+}
+*/
+//console.log(path.length);
+  if (path.length == 0)
+  {
+  window.location.reload()
+
+  }
+
+for(var i = 0; i<path.length;i++){
+  for(var j = 0; j<2;j++){
+    if (j==0){
+            positionX = path[i][j];
+              }
+    else{
+       positionY=path[i][j];
+        }
+  }
+    //console.log("X " + positionX + " Y "+ positionY);
+  ctx.beginPath();
+  ctx.fillStyle = "yellow";
+  ctx.fillRect(positionX * 25,positionY * 25,tailleCases,tailleCases);
+  ctx.closePath();
+}
+ctx.beginPath();
+ctx.fillStyle = "yellow";
+ctx.fillRect((positionX + 1) * 25,positionY * 25,tailleCases,tailleCases);
+ctx.closePath();
 
   noLoop();
 }
